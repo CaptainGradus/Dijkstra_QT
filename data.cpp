@@ -1,15 +1,11 @@
 #include <stdexcept>
 #include "data.h"
 
-Data::Data()
-{
-    this->isDefined = false;
-}
+Data::Data() : isDefined(false)
+{}
 
-Data::Data(double data) {
-    this->data = data;
-    this->isDefined = true;
-}
+Data::Data(double data) : data(data), isDefined(true)
+{}
 
 bool Data::isDef() {
     return this->isDefined;

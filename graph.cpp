@@ -1,6 +1,8 @@
 #include "graph.h"
 
 struct Graph::algResults {
+    algResults(std::vector<int>* pathways, Data* distances) : pathways(pathways), distances(distances)
+    {}
     std::vector<int>* pathways;
     Data* distances;
 };
@@ -10,7 +12,7 @@ Graph::Graph(Data** matrix)
     this->matrix = matrix;
 }
 
-void Graph::dijkstra(const int start) const {
+Graph::algResults Graph::dijkstra(const int start) const {
     std::vector<int>* tempPathways = new std::vector<int>[size];
     Data* tempDistances = new Data[size];
     bool* isVisited = new bool[size];
@@ -34,6 +36,8 @@ void Graph::dijkstra(const int start) const {
             tempPathways[i].push_back(i);
         }
     }
+
+    return
 }
 
 int Graph::findMin(Data* const &distances, bool* const &isVisited, const int &size) const {

@@ -14,6 +14,6 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
         return -1;
 
-
+    Data f(1.0);
     return app.exec();
 }
