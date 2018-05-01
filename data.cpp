@@ -14,7 +14,7 @@ bool Data::isDef() {
 double Data::getData() {
     if (isDefined)
         return this->data;
-    throw std::logic_error("data is undefined");
+    throw logic_error("data is undefined");
 }
 
 void Data::setData(double data) {
@@ -37,7 +37,7 @@ bool operator == (const Data& lVar, const Data& rVar) {
         return lVar.data == rVar.data;
     else if (lVar.isDefined || rVar.isDefined)
         return false;
-    throw std::logic_error("cannot compare undefined variables");
+    throw logic_error("cannot compare undefined variables");
 }
 
 bool operator != (const Data& lVar, const Data& rVar) {
@@ -51,7 +51,7 @@ bool operator < (const Data& lVar, const Data& rVar) {
         return false;
     else if (lVar.isDefined && !rVar.isDefined)
         return true;
-    throw std::logic_error("cannot compare undefined variables");
+    throw logic_error("cannot compare undefined variables");
 }
 
 bool operator > (const Data& lVar, const Data& rVar) {
@@ -71,7 +71,7 @@ Data& operator += (Data& lVar, const Data& rVar) {
         lVar.data += rVar.data;
         return lVar;
     }
-    throw std::logic_error("cannot operate with an undefined variable");
+    throw logic_error("cannot operate with an undefined variable");
 }
 
 Data& operator -= (Data& lVar, const Data& rVar) {
@@ -79,7 +79,7 @@ Data& operator -= (Data& lVar, const Data& rVar) {
         lVar.data -= rVar.data;
         return lVar;
     }
-    throw std::logic_error("cannot operate with an undefined variable");
+    throw logic_error("cannot operate with an undefined variable");
 }
 
 Data& operator *= (Data& lVar, const Data& rVar) {
@@ -87,7 +87,7 @@ Data& operator *= (Data& lVar, const Data& rVar) {
         lVar.data *= rVar.data;
         return lVar;
     }
-    throw std::logic_error("cannot operate with an undefined variable");
+    throw logic_error("cannot operate with an undefined variable");
 }
 
 Data& operator /= (Data& lVar, const Data& rVar) {
@@ -95,13 +95,13 @@ Data& operator /= (Data& lVar, const Data& rVar) {
         lVar.data /= rVar.data;
         return lVar;
     }
-    throw std::logic_error("cannot operate with an undefined variable");
+    throw logic_error("cannot operate with an undefined variable");
 }
 
 Data operator + (Data var) {
     if (var.isDefined)
         return var;
-    throw std::logic_error("cannot operate with an undefined variable");
+    throw logic_error("cannot operate with an undefined variable");
 }
 
 Data operator - (Data var) {
@@ -109,7 +109,7 @@ Data operator - (Data var) {
         var.data = -var.data;
         return var;
     }
-    throw std::logic_error("cannot operate with an undefined variable");
+    throw logic_error("cannot operate with an undefined variable");
 }
 
 Data operator + (Data lVar, const Data& rVar) {

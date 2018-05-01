@@ -1,6 +1,7 @@
 #ifndef DATA_H
 #define DATA_H
 
+using namespace std;
 
 class Data {
 private:
@@ -14,6 +15,7 @@ public:
     void setData(double);
     void undef();
     Data& operator = (const Data&);
+
     friend bool operator == (const Data&, const Data&);
     friend bool operator != (const Data&, const Data&);
     friend bool operator < (const Data&, const Data&);

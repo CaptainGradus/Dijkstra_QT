@@ -1,9 +1,11 @@
 #include "graph.h"
 
 struct Graph::algResults {
-    algResults(std::vector<int>* pathways, Data* distances) : pathways(pathways), distances(distances)
+    algResults(vector<int>* pathways, Data* distances) : pathways(pathways), distances(distances)
     {}
-    std::vector<int>* pathways;
+    algResults()
+    {}
+    vector<int>* pathways;
     Data* distances;
 };
 
@@ -13,7 +15,7 @@ Graph::Graph(Data** matrix)
 }
 
 Graph::algResults Graph::dijkstra(const int start) const {
-    std::vector<int>* tempPathways = new std::vector<int>[size];
+    vector<int>* tempPathways = new vector<int>[size];
     Data* tempDistances = new Data[size];
     bool* isVisited = new bool[size];
     int counter = size;
@@ -30,14 +32,15 @@ Graph::algResults Graph::dijkstra(const int start) const {
         int curVertex = findMin(tempDistances, isVisited, size);
         isVisited[curVertex] = true;
 
-        for (int i = 0; i < size && !isVisited[i] && matrix[curVertex][i].isDef() && (tempDistances[i] > tempDistances[curVertex] + matrix[curVertex][i]); i++) {
-            tempDistances[curVertex] = tempDistances[i] + matrix[curVertex][i];
-            tempPathways[i] = tempPathways[curVertex];
-            tempPathways[i].push_back(i);
-        }
+        for (int i = 0; i < size && !isVisited[i] && matrix[curVertex][i].isDef(); i++)
+            if (tempDistances[i] > tempDistances[curVertex] + matrix[curVertex][i]) {
+                tempDistances[curVertex] = tempDistances[i] + matrix[curVertex][i];
+                tempPathways[i] = tempPathways[curVertex];
+                tempPathways[i].push_back(i);
+            }
     }
 
-    return
+    return algResults(tempPathways, tempDistances);
 }
 
 int Graph::findMin(Data* const &distances, bool* const &isVisited, const int &size) const {
@@ -46,4 +49,44 @@ int Graph::findMin(Data* const &distances, bool* const &isVisited, const int &si
         if (!isVisited[i] && distances[i] < distances[min])
             min = i;
     return min;
+}
+
+int Graph::getSize() const{
+    return this->size;
+}
+
+vector<int> Graph::getShortPath(const int& start, const int& end) {
+    if (shortPathways.find(start) == shortPathways.end())
+        shortPathways.insert(pair<int, algResults>(start, dijkstra(start)));
+
+    return shortPathways[start].pathways[end];
+}
+
+vector<int>* Graph::getAllShortPathways(const int& start) {
+    if (shortPathways.find(start) == shortPathways.end())
+        shortPathways.insert(pair<int, algResults>(start, dijkstra(start)));
+
+    vector<int>* temp = new vector<int>[size];
+    for (int i = 0; i < size; i++)
+        temp[i] = shortPathways[start].pathways[i];
+
+    return temp;
+}
+
+Data Graph::getDistance(const int& start, const int& end) {
+    if (shortPathways.find(start) == shortPathways.end())
+        shortPathways.insert(pair<int, algResults>(start, dijkstra(start)));
+
+    return shortPathways[start].distances[end];
+}
+
+Data* Graph::getAllDistances(const int& start) {
+    if (shortPathways.find(start) == shortPathways.end())
+        shortPathways.insert(pair<int, algResults>(start, dijkstra(start)));
+
+    Data* temp = new Data[size];
+    for (int i = 0; i < size; i++)
+        temp[i] = shortPathways[start].distances[i];
+
+    return temp;
 }
