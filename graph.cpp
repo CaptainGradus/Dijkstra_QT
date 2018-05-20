@@ -1,22 +1,25 @@
 #include "graph.h"
 
-struct Graph::algResults {
-    algResults(vector<int>* pathways, Data* distances) : pathways(pathways), distances(distances)
-    {}
-    algResults()
-    {}
-    vector<int>* pathways;
-    Data* distances;
-};
+//struct Graph::algResults {
+//    algResults(vector<int>* pathways = nullptr, GraphData* distances = nullptr) : pathways(pathways), distances(distances)
+//    {}
 
-Graph::Graph(Data** matrix)
+//    vector<int>* pathways;
+//    GraphData* distances;
+//};
+
+Graph::Graph(QObject *parent) : QObject(parent), matrix(nullptr)
 {
-    this->matrix = matrix;
+}
+
+
+Graph::Graph(GraphData** matrix, QObject *parent) : QObject(parent), matrix(matrix)
+{
 }
 
 Graph::algResults Graph::dijkstra(const int start) const {
     vector<int>* tempPathways = new vector<int>[size];
-    Data* tempDistances = new Data[size];
+    GraphData* tempDistances = new GraphData[size];
     bool* isVisited = new bool[size];
     int counter = size;
 
@@ -43,7 +46,7 @@ Graph::algResults Graph::dijkstra(const int start) const {
     return algResults(tempPathways, tempDistances);
 }
 
-int Graph::findMin(Data* const &distances, bool* const &isVisited, const int &size) const {
+int Graph::findMin(GraphData* const &distances, bool* const &isVisited, const int &size) const {
     int min = 0;
     for (int i = 1; i < size; i++)
         if (!isVisited[i] && distances[i] < distances[min])
@@ -73,20 +76,23 @@ vector<int>* Graph::getAllShortPathways(const int& start) {
     return temp;
 }
 
-Data Graph::getDistance(const int& start, const int& end) {
+GraphData Graph::getDistance(const int& start, const int& end) {
     if (shortPathways.find(start) == shortPathways.end())
         shortPathways.insert(pair<int, algResults>(start, dijkstra(start)));
 
     return shortPathways[start].distances[end];
 }
 
-Data* Graph::getAllDistances(const int& start) {
+GraphData* Graph::getAllDistances(const int& start) {
     if (shortPathways.find(start) == shortPathways.end())
         shortPathways.insert(pair<int, algResults>(start, dijkstra(start)));
 
-    Data* temp = new Data[size];
+    GraphData* temp = new GraphData[size];
     for (int i = 0; i < size; i++)
         temp[i] = shortPathways[start].distances[i];
 
     return temp;
 }
+
+Graph::algResults::algResults(vector<int> *pathways, GraphData *distances) : pathways(pathways), distances(distances)
+{}

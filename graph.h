@@ -1,31 +1,47 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <QObject>
 #include <map>
 #include <vector>
-#include "data.h"
 
-class Graph
+#include "graphdata.h"
+
+using namespace std;
+
+class Graph : public QObject
 {
-private:
-    struct algResults;
-
-    Data** matrix;
-    int size;
-    map<int, algResults> shortPathways;
-
-    algResults dijkstra(const int) const;
-    int findMin(Data* const &, bool* const &, const int &) const;
+    Q_OBJECT
 public:
-    Graph(Data** matrix);
+    explicit Graph(QObject *parent = nullptr);
+    Graph(GraphData** matrix, QObject *parent = nullptr);
 
     int getSize() const;
 
     vector<int> getShortPath(const int&, const int&);
     vector<int>* getAllShortPathways(const int&);
 
-    Data getDistance(const int&, const int&);
-    Data* getAllDistances(const int&);
+    GraphData getDistance(const int&, const int&);
+    GraphData* getAllDistances(const int&);
+
+signals:
+
+public slots:
+
+private:
+    struct algResults {
+        algResults(vector<int>* pathways = nullptr, GraphData* distances = nullptr);
+
+        vector<int>* pathways;
+        GraphData* distances;
+    };
+
+    GraphData** matrix;
+    int size;
+    map<int, algResults> shortPathways;
+
+    algResults dijkstra(const int) const;
+    int findMin(GraphData* const &, bool* const &, const int &) const;
 };
 
 #endif // GRAPH_H

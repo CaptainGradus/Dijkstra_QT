@@ -1,6 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include "data.h"
+#include "graphdata.h"
 #include "graph.h"
 
 int main(int argc, char *argv[])
@@ -14,7 +14,6 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
         return -1;
 
-    //Data f(1.0);
-    //Data s = f;
+
     return app.exec();
 }

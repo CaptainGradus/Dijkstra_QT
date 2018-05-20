@@ -1,38 +1,47 @@
 #include <stdexcept>
-#include "data.h"
 
-Data::Data() : isDefined(false)
-{}
+#include "graphdata.h"
 
-Data::Data(double data) : data(data), isDefined(true)
-{}
+using namespace std;
 
-bool Data::isDef() {
+GraphData::GraphData(QObject *parent) : QObject(parent), isDefined(false)
+{
+}
+
+GraphData::GraphData(double data, QObject *parent) : QObject(parent), data(data), isDefined(true)
+{
+}
+
+GraphData::GraphData(const GraphData & copy) : QObject(nullptr), data(copy.data), isDefined(copy.isDefined)
+{
+}
+
+bool GraphData::isDef() {
     return this->isDefined;
 }
 
-double Data::getData() {
+double GraphData::getData() {
     if (isDefined)
         return this->data;
     throw logic_error("data is undefined");
 }
 
-void Data::setData(double data) {
+void GraphData::setData(double data) {
     this->data = data;
     this->isDefined = true;
 }
 
-void Data::undef() {
+void GraphData::undef() {
     this->isDefined = false;
 }
 
-Data& Data::operator = (const Data& var) {
+GraphData& GraphData::operator = (const GraphData& var) {
     this->data = var.data;
     this->isDefined = var.isDefined;
     return *this;
 }
 
-bool operator == (const Data& lVar, const Data& rVar) {
+bool operator == (const GraphData& lVar, const GraphData& rVar) {
     if (lVar.isDefined && rVar.isDefined)
         return lVar.data == rVar.data;
     else if (lVar.isDefined || rVar.isDefined)
@@ -40,11 +49,11 @@ bool operator == (const Data& lVar, const Data& rVar) {
     throw logic_error("cannot compare undefined variables");
 }
 
-bool operator != (const Data& lVar, const Data& rVar) {
+bool operator != (const GraphData& lVar, const GraphData& rVar) {
     return !(lVar == rVar);
 }
 
-bool operator < (const Data& lVar, const Data& rVar) {
+bool operator < (const GraphData& lVar, const GraphData& rVar) {
     if (lVar.isDefined && rVar.isDefined)
         return lVar.data < rVar.data;
     else if (!lVar.isDefined && rVar.isDefined)
@@ -54,19 +63,19 @@ bool operator < (const Data& lVar, const Data& rVar) {
     throw logic_error("cannot compare undefined variables");
 }
 
-bool operator > (const Data& lVar, const Data& rVar) {
+bool operator > (const GraphData& lVar, const GraphData& rVar) {
     return rVar < lVar;
 }
 
-bool operator <= (const Data& lVar, const Data& rVar) {
+bool operator <= (const GraphData& lVar, const GraphData& rVar) {
     return !(rVar < lVar);
 }
 
-bool operator >= (const Data& lVar, const Data& rVar) {
+bool operator >= (const GraphData& lVar, const GraphData& rVar) {
     return !(lVar < rVar);
 }
 
-Data& operator += (Data& lVar, const Data& rVar) {
+GraphData& operator += (GraphData& lVar, const GraphData& rVar) {
     if (lVar.isDefined && rVar.isDefined) {
         lVar.data += rVar.data;
         return lVar;
@@ -74,7 +83,7 @@ Data& operator += (Data& lVar, const Data& rVar) {
     throw logic_error("cannot operate with an undefined variable");
 }
 
-Data& operator -= (Data& lVar, const Data& rVar) {
+GraphData& operator -= (GraphData& lVar, const GraphData& rVar) {
     if (lVar.isDefined && rVar.isDefined) {
         lVar.data -= rVar.data;
         return lVar;
@@ -82,7 +91,7 @@ Data& operator -= (Data& lVar, const Data& rVar) {
     throw logic_error("cannot operate with an undefined variable");
 }
 
-Data& operator *= (Data& lVar, const Data& rVar) {
+GraphData& operator *= (GraphData& lVar, const GraphData& rVar) {
     if (lVar.isDefined && rVar.isDefined) {
         lVar.data *= rVar.data;
         return lVar;
@@ -90,7 +99,7 @@ Data& operator *= (Data& lVar, const Data& rVar) {
     throw logic_error("cannot operate with an undefined variable");
 }
 
-Data& operator /= (Data& lVar, const Data& rVar) {
+GraphData& operator /= (GraphData& lVar, const GraphData& rVar) {
     if (lVar.isDefined && rVar.isDefined) {
         lVar.data /= rVar.data;
         return lVar;
@@ -98,13 +107,13 @@ Data& operator /= (Data& lVar, const Data& rVar) {
     throw logic_error("cannot operate with an undefined variable");
 }
 
-Data operator + (Data var) {
+GraphData operator + (GraphData var) {
     if (var.isDefined)
         return var;
     throw logic_error("cannot operate with an undefined variable");
 }
 
-Data operator - (Data var) {
+GraphData operator - (GraphData var) {
     if (var.isDefined) {
         var.data = -var.data;
         return var;
@@ -112,22 +121,18 @@ Data operator - (Data var) {
     throw logic_error("cannot operate with an undefined variable");
 }
 
-Data operator + (Data lVar, const Data& rVar) {
+GraphData operator + (GraphData lVar, const GraphData& rVar) {
     return lVar += rVar;
 }
 
-Data operator - (Data lVar, const Data& rVar) {
+GraphData operator - (GraphData lVar, const GraphData& rVar) {
     return lVar -= rVar;
 }
 
-Data operator * (Data lVar, const Data& rVar) {
+GraphData operator * (GraphData lVar, const GraphData& rVar) {
     return lVar *= rVar;
 }
 
-Data operator / (Data lVar, const Data& rVar) {
+GraphData operator / (GraphData lVar, const GraphData& rVar) {
     return lVar /= rVar;
 }
-
-
-
-

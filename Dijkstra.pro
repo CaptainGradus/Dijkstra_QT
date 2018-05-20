@@ -14,8 +14,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
+    graphdata.cpp \
     graph.cpp \
-    data.cpp
+    graphmatrixmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -31,6 +32,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
+    graphdata.h \
     graph.h \
-    data.h
+    graphmatrixmodel.h
 

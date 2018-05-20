@@ -1,5 +1,6 @@
-import QtQuick 2.9
 import QtQuick.Window 2.2
+import QtQuick 2.9
+import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.3
@@ -16,6 +17,37 @@ Window {
         y: 119
         width: 442
         height: 223
+        backgroundVisible: true
+        alternatingRowColors: true
+
+        TableViewColumn {
+            role: "data"
+            title: "0"
+        }
+
+        TableViewColumn {
+            role: "data"
+            title: "0"
+        }
+
+        TableViewColumn {
+            role: "data"
+            title: "0"
+        }
+
+        model: ListModel {
+            ListElement {
+                data: Data
+            }
+
+            ListElement {
+                data: Data
+            }
+
+            ListElement {
+                data: Data
+            }
+        }
     }
 
     Button {
@@ -34,7 +66,6 @@ Window {
         text: qsTr("Матрица смежности")
         font.pointSize: 12
         font.family: "Arial"
-
     }
 
 
