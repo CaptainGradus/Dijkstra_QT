@@ -10,11 +10,12 @@ public:
     explicit GraphData(QObject *parent = nullptr);
     GraphData(double data, QObject *parent = nullptr);
     GraphData(const GraphData&);
-    bool isDef();
+    GraphData& operator = (const GraphData&);
+
+    bool isDef() const;
     double getData();
     void setData(double);
     void undef();
-    GraphData& operator = (const GraphData&);
 
     friend bool operator == (const GraphData&, const GraphData&);
     friend bool operator != (const GraphData&, const GraphData&);

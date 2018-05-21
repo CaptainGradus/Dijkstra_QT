@@ -1,24 +1,18 @@
 #include "graph.h"
 
-//struct Graph::algResults {
-//    algResults(vector<int>* pathways = nullptr, GraphData* distances = nullptr) : pathways(pathways), distances(distances)
-//    {}
-
-//    vector<int>* pathways;
-//    GraphData* distances;
-//};
-
-Graph::Graph(QObject *parent) : QObject(parent), matrix(nullptr)
+Graph::Graph(QObject *parent) : QObject(parent)
 {
 }
 
 
-Graph::Graph(GraphData** matrix, QObject *parent) : QObject(parent), matrix(matrix)
+Graph::Graph(GraphDataVector matrix, QObject *parent) : QObject(parent), matrix(matrix)
 {
 }
 
 Graph::algResults Graph::dijkstra(const int start) const {
-    vector<int>* tempPathways = new vector<int>[size];
+    int size = matrix.getSize();
+
+    QVector<int>* tempPathways = new QVector<int>[size];
     GraphData* tempDistances = new GraphData[size];
     bool* isVisited = new bool[size];
     int counter = size;
@@ -35,9 +29,9 @@ Graph::algResults Graph::dijkstra(const int start) const {
         int curVertex = findMin(tempDistances, isVisited, size);
         isVisited[curVertex] = true;
 
-        for (int i = 0; i < size && !isVisited[i] && matrix[curVertex][i].isDef(); i++)
-            if (tempDistances[i] > tempDistances[curVertex] + matrix[curVertex][i]) {
-                tempDistances[curVertex] = tempDistances[i] + matrix[curVertex][i];
+        for (int i = 0; i < size && !isVisited[i] && matrix.getItem(curVertex, i).isDef(); i++)
+            if (tempDistances[i] > tempDistances[curVertex] + matrix.getItem(curVertex, i)) {
+                tempDistances[curVertex] = tempDistances[i] + matrix.getItem(curVertex, i);
                 tempPathways[i] = tempPathways[curVertex];
                 tempPathways[i].push_back(i);
             }
@@ -55,22 +49,22 @@ int Graph::findMin(GraphData* const &distances, bool* const &isVisited, const in
 }
 
 int Graph::getSize() const{
-    return this->size;
+    return matrix.getSize();
 }
 
-vector<int> Graph::getShortPath(const int& start, const int& end) {
+QVector<int> Graph::getShortPath(const int& start, const int& end) {
     if (shortPathways.find(start) == shortPathways.end())
-        shortPathways.insert(pair<int, algResults>(start, dijkstra(start)));
+        shortPathways.insert(start, dijkstra(start));
 
     return shortPathways[start].pathways[end];
 }
 
-vector<int>* Graph::getAllShortPathways(const int& start) {
+QVector<int>* Graph::getAllShortPathways(const int& start) {
     if (shortPathways.find(start) == shortPathways.end())
-        shortPathways.insert(pair<int, algResults>(start, dijkstra(start)));
+        shortPathways.insert(start, dijkstra(start));
 
-    vector<int>* temp = new vector<int>[size];
-    for (int i = 0; i < size; i++)
+    QVector<int>* temp = new QVector<int>[matrix.getSize()];
+    for (int i = 0; i < matrix.getSize(); i++)
         temp[i] = shortPathways[start].pathways[i];
 
     return temp;
@@ -78,21 +72,21 @@ vector<int>* Graph::getAllShortPathways(const int& start) {
 
 GraphData Graph::getDistance(const int& start, const int& end) {
     if (shortPathways.find(start) == shortPathways.end())
-        shortPathways.insert(pair<int, algResults>(start, dijkstra(start)));
+        shortPathways.insert(start, dijkstra(start));
 
     return shortPathways[start].distances[end];
 }
 
 GraphData* Graph::getAllDistances(const int& start) {
     if (shortPathways.find(start) == shortPathways.end())
-        shortPathways.insert(pair<int, algResults>(start, dijkstra(start)));
+        shortPathways.insert(start, dijkstra(start));
 
-    GraphData* temp = new GraphData[size];
-    for (int i = 0; i < size; i++)
+    GraphData* temp = new GraphData[matrix.getSize()];
+    for (int i = 0; i < matrix.getSize(); i++)
         temp[i] = shortPathways[start].distances[i];
 
     return temp;
 }
 
-Graph::algResults::algResults(vector<int> *pathways, GraphData *distances) : pathways(pathways), distances(distances)
+Graph::algResults::algResults(QVector<int> *pathways, GraphData *distances) : pathways(pathways), distances(distances)
 {}

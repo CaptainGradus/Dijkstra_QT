@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>ListModel.qml</file>
+        <file>GraphMatrix.qml</file>
     </qresource>
 </RCC>

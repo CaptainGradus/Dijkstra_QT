@@ -16,7 +16,8 @@ SOURCES += \
         main.cpp \
     graphdata.cpp \
     graph.cpp \
-    graphmatrixmodel.cpp
+    graphmatrixmodel.cpp \
+    graphdatavector.cpp
 
 RESOURCES += qml.qrc
 
@@ -34,5 +35,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     graphdata.h \
     graph.h \
-    graphmatrixmodel.h
+    graphmatrixmodel.h \
+    graphdatavector.h
 

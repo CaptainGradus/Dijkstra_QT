@@ -12,11 +12,11 @@ GraphData::GraphData(double data, QObject *parent) : QObject(parent), data(data)
 {
 }
 
-GraphData::GraphData(const GraphData & copy) : QObject(nullptr), data(copy.data), isDefined(copy.isDefined)
+GraphData::GraphData(const GraphData & other) : QObject(other.parent()), data(other.data), isDefined(other.isDefined)
 {
 }
 
-bool GraphData::isDef() {
+bool GraphData::isDef() const {
     return isDefined;
 }
 
@@ -45,6 +45,9 @@ GraphData& GraphData::operator = (const GraphData& var) {
 bool operator == (const GraphData& lVar, const GraphData& rVar) {
     if (lVar.isDefined && rVar.isDefined)
         return lVar.data == rVar.data;
+
+    if (lVar.isDefined || rVar.isDefined)
+        return false;
 
     throw logic_error("cannot compare both undefined variables");
 }
