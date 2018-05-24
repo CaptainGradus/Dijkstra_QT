@@ -75,6 +75,7 @@ Window {
                             import QtQuick.Controls 1.4;
                             import QtQuick 2.7;
                             TableViewColumn {
+                                title: \"' + r + '\"
                                 role: \"' + r + '\";
                                 width: 40;
 
@@ -88,7 +89,15 @@ Window {
                                     }
                                 }
                             }', graphMatrix, "GraphMatrix.qml");
+
+
                             graphMatrix.addColumn(col)
+                            graphMatrix.model = Qt.createQmlObject('
+                            import Graph 1.0;
+
+                            GraphModel {
+                                    matrix: graphData
+                            }', graphMatrix, "GraphMatrix.qml");
                         }
                     }
 

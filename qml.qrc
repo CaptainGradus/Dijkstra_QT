@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>GraphMatrix.qml</file>
+        <file>SolutionWindow.qml</file>
     </qresource>
 </RCC>

@@ -16,6 +16,13 @@ TableView {
     alternatingRowColors: true
 
     TableViewColumn {
+        title: "X"
+        role: "Name"
+        width: 40
+    }
+
+    TableViewColumn {
+        title: "A"
         role: "A"
         width: 40
 
@@ -30,6 +37,7 @@ TableView {
         }
     }
     TableViewColumn {
+        title: "B"
         role: "B"
         width: 40
 
@@ -44,6 +52,7 @@ TableView {
         }
     }
     TableViewColumn {
+        title: "C"
         role: "C"
         width: 40
 
@@ -58,6 +67,7 @@ TableView {
         }
     }
     TableViewColumn {
+        title: "D"
         role: "D"
         width: 40
 
@@ -72,6 +82,7 @@ TableView {
         }
     }
     TableViewColumn {
+        title: "E"
         role: "E"
         width: 40
 
@@ -86,6 +97,7 @@ TableView {
         }
     }
     TableViewColumn {
+        title: "F"
         role: "F"
         width: 40
 
@@ -103,6 +115,4 @@ TableView {
     model: GraphModel {
         matrix: graphData
     }
-
-
 }

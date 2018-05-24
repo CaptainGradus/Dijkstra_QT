@@ -23,7 +23,7 @@ int GraphMatrixModel::columnCount(const QModelIndex &parent) const
     if (parent.isValid())
         return 0;
 
-    return mMatrix->getSize();
+    return mMatrix->getSize() + 1;
 }
 
 QVariant GraphMatrixModel::data(const QModelIndex &index, int role) const
@@ -31,12 +31,14 @@ QVariant GraphMatrixModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (role == 262)
-        int k;
+    if (role == myEnum.at(0)) {
+        QString s ('A' + index.row());
+        return s;
+    }
 
     if (myEnum.contains(role))
-        if (mMatrix->getItem(index.row(), myEnum.indexOf(role)).isDef())
-            return mMatrix->getItem(index.row(), myEnum.indexOf(role)).getData();
+        if (mMatrix->getItem(index.row(), myEnum.indexOf(role) - 1).isDef())
+            return mMatrix->getItem(index.row(), myEnum.indexOf(role) - 1).getData();
 
     return ("-");
 }
@@ -51,7 +53,7 @@ bool GraphMatrixModel::setData(const QModelIndex &index, const QVariant &value, 
     if (myEnum.contains(role))
         item = value.toDouble();
 
-    if (mMatrix->setItemAt(index.row(), myEnum.indexOf(role), item)) {
+    if (mMatrix->setItemAt(index.row(), myEnum.indexOf(role) - 1, item)) {
         emit dataChanged(index, index, QVector<int>() << role);
         return true;
     }
@@ -73,20 +75,21 @@ QHash<int, QByteArray> GraphMatrixModel::roleNames() const
     char i = 'A';
     string sym;
 
-    for (int role : myEnum) {
-        sym = i++;
-        names[role] = sym.c_str();
+    for (int j = 1; j < myEnum.size(); j++, i++) {
+        sym = i;
+        names[myEnum.at(j)] = sym.c_str();
     }
+    names[myEnum.at(0)] = "Name";
 
     return names;
 }
 
-QVariant GraphMatrixModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant GraphMatrixModel::getData(int rowIndex, int columnIndex) const
 {
-    if (role != Qt::DisplayRole)
-             return QVariant("");
+    if (mMatrix->getItem(rowIndex, columnIndex).isDef())
+        return mMatrix->getItem(rowIndex, columnIndex).getData();
 
-    return section + 1;
+    return ("-");
 }
 
 GraphDataVector *GraphMatrixModel::matrix() const
@@ -103,7 +106,7 @@ void GraphMatrixModel::setMatrix(GraphDataVector *matrix)
 
     mMatrix = matrix;
 
-    for (int i = 1; i < mMatrix->getSize(); i++)
+    for (int i = 0; i < mMatrix->getSize(); i++)
         addEnum();
 
     if (mMatrix) {
