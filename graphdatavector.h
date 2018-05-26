@@ -18,7 +18,7 @@ public:
 
     QVector<QVector<GraphData>> items() const;
 
-    bool setItemAt (int rowIndex, int columnIndex, double item);
+    bool setItemAt (int rowIndex, int columnIndex, GraphData item);
 
     int getSize() const;
 

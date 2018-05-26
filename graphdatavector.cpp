@@ -15,10 +15,9 @@ QVector<QVector<GraphData> > GraphDataVector::items() const
     return vector;
 }
 
-bool GraphDataVector::setItemAt(int rowIndex, int columnIndex, double item)
+bool GraphDataVector::setItemAt(int rowIndex, int columnIndex, GraphData item)
 {
-    GraphData i(item);
-    if (!(rowIndex < size && columnIndex < size) || (vector[rowIndex][columnIndex] == i))
+    if (!(rowIndex < size && columnIndex < size))
         return false;
 
     vector[rowIndex][columnIndex] = item;

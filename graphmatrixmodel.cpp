@@ -48,10 +48,14 @@ bool GraphMatrixModel::setData(const QModelIndex &index, const QVariant &value, 
     if (!mMatrix)
         return false;
 
-    double item;
+    GraphData item;
+    bool isNum;
 
     if (myEnum.contains(role))
-        item = value.toDouble();
+        item = value.toString().toDouble(&isNum);
+
+    if (!isNum)
+        item.undef();
 
     if (mMatrix->setItemAt(index.row(), myEnum.indexOf(role) - 1, item)) {
         emit dataChanged(index, index, QVector<int>() << role);
@@ -111,9 +115,9 @@ void GraphMatrixModel::setMatrix(GraphDataVector *matrix)
 
     if (mMatrix) {
         connect (mMatrix, &GraphDataVector::preItemAppended, this, [=]() {
-                 beginInsertRows(QModelIndex(), mMatrix->getSize(), mMatrix->getSize());
-                beginInsertColumns(QModelIndex(), mMatrix->getSize(), mMatrix->getSize());
-                 addEnum();
+            beginInsertRows(QModelIndex(), mMatrix->getSize(), mMatrix->getSize());
+            beginInsertColumns(QModelIndex(), mMatrix->getSize(), mMatrix->getSize());
+            addEnum();
         });
 
         connect (mMatrix, &GraphDataVector::postItemAppended, this, [=]() {
@@ -121,14 +125,14 @@ void GraphMatrixModel::setMatrix(GraphDataVector *matrix)
             endInsertRows();});
 
         connect (mMatrix, &GraphDataVector::preItemRemoved, this, [=](int index) {
-                 beginResetModel();
+            beginResetModel();
             //beginRemoveRows(QModelIndex(), index, index);
 
-                myEnum.pop_back();
+            myEnum.pop_back();
         });
 
         connect (mMatrix, &GraphDataVector::postItemRemoved, this, [=]() {
-                 endResetModel();
+            endResetModel();
             /*endRemoveRows();*/});
     }
 

@@ -1,5 +1,3 @@
-#include <stdexcept>
-
 #include "graphdata.h"
 
 using namespace std;

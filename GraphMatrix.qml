@@ -29,10 +29,9 @@ TableView {
         delegate: TextEdit {
             text: model.A
             onEditingFinished: {
-                if (!isNaN(text))
-                    model.A = Number(text)
-                else
+                if (isNaN(text))
                     text = "-"
+                model.A = text
             }
         }
     }
@@ -44,10 +43,9 @@ TableView {
         delegate: TextEdit {
             text: model.B
             onEditingFinished: {
-                if (!isNaN(text))
-                    model.B = Number(text)
-                else
+                if (isNaN(text))
                     text = "-"
+                model.B = text
             }
         }
     }
@@ -59,10 +57,9 @@ TableView {
         delegate: TextEdit {
             text: model.C
             onEditingFinished: {
-                if (!isNaN(text))
-                    model.C = Number(text)
-                else
+                if (isNaN(text))
                     text = "-"
+                model.C = text
             }
         }
     }
@@ -74,10 +71,9 @@ TableView {
         delegate: TextEdit {
             text: model.D
             onEditingFinished: {
-                if (!isNaN(text))
-                    model.D = Number(text)
-                else
+                if (isNaN(text))
                     text = "-"
+                model.D = text
             }
         }
     }
@@ -89,10 +85,9 @@ TableView {
         delegate: TextEdit {
             text: model.E
             onEditingFinished: {
-                if (!isNaN(text))
-                    model.E = Number(text)
-                else
+                if (isNaN(text))
                     text = "-"
+                model.E = text
             }
         }
     }
@@ -104,10 +99,9 @@ TableView {
         delegate: TextEdit {
             text: model.F
             onEditingFinished: {
-                if (!isNaN(text))
-                    model.F = Number(text)
-                else
+                if (isNaN(text))
                     text = "-"
+                model.F = text
             }
         }
     }

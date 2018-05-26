@@ -2,6 +2,7 @@
 #define GRAPHDATA_H
 
 #include <QObject>
+#include <stdexcept>
 
 class GraphData : public QObject
 {

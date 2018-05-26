@@ -16,15 +16,19 @@ int main(int argc, char *argv[])
     qmlRegisterType<GraphMatrixModel>("Graph", 1, 0, "GraphModel");
     qmlRegisterUncreatableType<GraphDataVector>("Graph", 1, 0, "GraphDataVector",
                                                   QStringLiteral("GraphDataVector should not be created in QML"));
-    qmlRegisterUncreatableType<Graph>("Graph", 1, 0, "AlgGraph",
-                                                  QStringLiteral("Graph should not be created in QML"));
-    qmlRegisterUncreatableType<GraphData>("Graph", 1, 0, "GraphData",
-                                                  QStringLiteral("GraphData should not be created in QML"));
+    qmlRegisterUncreatableType<QFile>("Graph", 1, 0, "SvgFile",
+                                                  QStringLiteral("QFile should not be created in QML"));
+    qmlRegisterType<Graph>("Graph", 1, 0, "Graph");
+
+    QFile file;
+    file.setFileName("solution.html");
+    file.open(QIODevice::ReadWrite);
 
     GraphDataVector graphData;
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("graphData"), &graphData);
+    engine.rootContext()->setContextProperty(QStringLiteral("svgFile"), &file);
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
