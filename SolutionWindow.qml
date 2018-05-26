@@ -55,7 +55,7 @@ Window {
 
                     onClicked: {
                         graph.draw(textField.text)
-                        image.update()
+                        image.source = "file://" + graph.filePath()
                     }
                 }
 
@@ -87,10 +87,7 @@ Window {
                 sourceSize.width: parent.width
                 anchors.fill: parent
                 sourceSize.height: parent.height
-                source: graph.filePath()
             }
         }
     }
-
-
 }

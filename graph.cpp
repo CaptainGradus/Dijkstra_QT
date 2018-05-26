@@ -1,6 +1,6 @@
 #include "graph.h"
 
-Graph::Graph(QObject *parent) : QObject(parent), mMatrix (nullptr)
+Graph::Graph(QObject *parent) : QObject(parent), mMatrix (nullptr), mFile (nullptr)
 {
 }
 
@@ -172,8 +172,8 @@ QString Graph::filePath()
         return "";
     }
 
-    qDebug() << mFile->symLinkTarget();
-    return mFile->symLinkTarget();
+    QFileInfo fileInfo(*mFile);
+    return fileInfo.absoluteFilePath().mid(2);
 }
 
 Graph::algResults::algResults(QVector<int> *pathways, GraphData *distances) : pathways(pathways), distances(distances)
