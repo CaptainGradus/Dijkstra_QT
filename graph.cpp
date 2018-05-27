@@ -44,23 +44,36 @@ int Graph::findMin(QVector<GraphData> const &distances, QVector<bool> const &isV
     return minIndex;
 }
 
-void Graph::drawArrow(QPainter& painter, double xStart, double yStart, double xEnd, double yEnd)
+void Graph::drawArrow(QPainter& painter, double xStart, double yStart, double xEnd, double yEnd, int weight)
 {
     double xSE = xEnd - xStart;
     double ySE = yEnd - yStart;
 
     double deviation = 25;
-    if (xStart > xEnd)
-        deviation = -deviation;
 
     double yDev = deviation / (sqrt (1 + pow(ySE / xSE, 2)));
     double xDev = sqrt (pow (deviation, 2) - pow (yDev, 2));
 
+    if (yStart < yEnd)
+        xDev = -xDev;
+
+    if (xStart > xEnd)
+        yDev = -yDev;
+
     QPainterPath path;
     path.moveTo(xStart, yStart);
+
     path.cubicTo((xStart + xEnd) / 2 + xDev, (yStart + yEnd) / 2 + yDev, xEnd, yEnd, xEnd, yEnd);
 
+    //qDebug() << "xStart: " << xStart << " yStart: " << yStart << " xEnd: " << xEnd << " yEnd: " << yEnd;
+    //qDebug() << " xDev: " << xDev << " yDev: " << yDev;
     painter.drawPath(path);
+
+    double textDev = 5;
+    if (xStart > xEnd)
+        textDev = -textDev;
+
+    painter.drawText((xStart + xEnd) / 2 + xDev, (yStart + yEnd) / 2 + yDev + textDev, QString::number(weight));
 
     int len = 20;
     double angle1 = 30 / degToRad;
@@ -152,11 +165,9 @@ void Graph::setMatrix(GraphDataVector *matrix)
     mMatrix = matrix;
 }
 
-void Graph::draw(int start)
+void Graph::draw(int start, int end)
 {
-    qDebug() << start;
-
-    if (!mMatrix && !mFile && (start > mMatrix->getSize()))
+    if (!mMatrix || !mFile || start < 0 || (start >= mMatrix->getSize()) || (end < 0 && end != -100) || (end >= mMatrix->getSize()))
         return;
 
     mFile->reset();
@@ -169,12 +180,17 @@ void Graph::draw(int start)
     generator.setDescription(tr("An SVG drawing created by the SVG Generator "));
 
     QVector<QVector<GraphData>> weightMat = mMatrix->items();
-    QVector<QVector<int>> pathways = getAllShortPathways(start);
+    QVector<QVector<int>> pathways;
+    if (end == -100)
+        pathways = getAllShortPathways(start);
+    else
+        pathways.append(getShortPath(start, end));
+
     QVector<Rib> ribs;
 
     for (int i = 0; i < weightMat.size(); i++)
         for (int j = 0; j < weightMat.size(); j++)
-            if (weightMat.at(i).at(j).isDef())
+            if (weightMat.at(i).at(j).isDef() && i != j)
                 ribs.append(Rib(i, j));
 
 
@@ -197,6 +213,9 @@ void Graph::draw(int start)
     pen.setWidth(3);
 
     for (Rib r : ribs) {
+        if (end != -100 && !r.isShort)
+            continue;
+
         if (r.isShort)
             pen.setColor(QColor("green"));
         else
@@ -215,10 +234,7 @@ void Graph::draw(int start)
         if (yE < yS)
             an = -an;
 
-        drawArrow(painter, xS, yS, xE - lilCircleRad * cos(an), yE - lilCircleRad * sin(an));
-
-        qDebug() << "xStart: " << xE - lilCircleRad * cos(an) << " yStart: " << yE - lilCircleRad * sin(an);
-        qDebug() << "xEnd: " << xS << " yEnd: " << yE;
+        drawArrow(painter, xS, yS, xE - lilCircleRad * cos(an), yE - lilCircleRad * sin(an), weightMat[r.start][r.end].getData());
     }
 
     painter.setPen(QColor("black"));
@@ -255,6 +271,38 @@ QString Graph::filePath()
 void Graph::resetSolutions()
 {
     shortPathways.clear();
+}
+
+QStringList Graph::getWeights(int start, int end)
+{
+    if (!mMatrix || !mFile || start < 0 || (start >= mMatrix->getSize()) || (end < 0 && end != -100) || (end >= mMatrix->getSize()))
+        return QStringList();
+
+    QString fromTo;
+
+    QStringList strList;
+
+    if (end == -100) {
+        int i = 0;
+
+        for (GraphData val : getAllDistances(start)) {
+            fromTo = start + 'A';
+            fromTo += "-";
+            fromTo += i++ + 'A';
+            fromTo += ": ";
+
+            strList.append(fromTo + QString::number(val.getData()));
+        }
+    }
+    else {
+        fromTo = start + 'A';
+        fromTo += "-";
+        fromTo += end + 'A';
+        fromTo += ": ";
+        strList.append(fromTo + QString::number(getDistance(start, end).getData()));
+    }
+
+    return strList;
 }
 
 Graph::algResults::algResults(QVector<QVector<int>> pathways, QVector<GraphData> distances) : pathways(pathways), distances(distances)

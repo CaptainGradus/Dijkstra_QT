@@ -40,11 +40,13 @@ public:
 signals:
 
 public slots:
-    void draw(int start);
+    void draw(int start, int end = -100);
 
     QString filePath();
 
     void resetSolutions();
+
+    QStringList getWeights(int start, int end = -100);
 
 private:
     const double degToRad = 57.2958;
@@ -78,7 +80,7 @@ private:
     algResults dijkstra(const int) const;
     int findMin(QVector<GraphData> const &distances, QVector<bool> const &isVisited) const;
 
-    void drawArrow(QPainter& painter, double xStart, double yStart, double xEnd, double yEnd);
+    void drawArrow(QPainter& painter, double xStart, double yStart, double xEnd, double yEnd, int weight);
 };
 
 #endif // GRAPH_H

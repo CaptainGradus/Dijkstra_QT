@@ -4,6 +4,7 @@ import QtQuick.Window 2.10
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.3
+import QtQuick 2.7
 
 import Graph 1.0
 
@@ -48,7 +49,34 @@ Window {
             ColumnLayout {
                 Layout.fillHeight: false
                 Layout.fillWidth: true
-                Layout.alignment: Qt.AlignLeft | Qt.AlignBottom 
+                Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
+
+                ListView {
+                    id: listView
+                    x: 0
+                    y: 0
+                    width: 110
+                    height: 160
+                    Layout.fillWidth: true
+                    Layout.fillHeight: false
+                    Layout.minimumHeight: 250
+
+                    delegate: Item {
+                        x: 5
+                        width: 80
+                        height: 40
+                        Row {
+                            id: row
+
+                            Text {
+                                text: modelData
+                                font.pointSize: 10
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                            spacing: 10
+                        }
+                    }
+                }
 
                 Button {
                     text: "нарисовать"
@@ -57,20 +85,41 @@ Window {
                     Layout.preferredWidth: 105
 
                     onClicked: {
-                        graph.draw(textField.text.charCodeAt(0) - 'A'.charCodeAt(0))
-                        image.source = "file://"
+                        if (textFieldTo.text.trim() === "") {
+                            graph.draw(textFieldFrom.text.charCodeAt(0) - 'A'.charCodeAt(0))
+
+                            listView.model = graph.getWeights(textFieldFrom.text.charCodeAt(0) - 'A'.charCodeAt(0))
+                        }
+                        else {
+                            graph.draw(textFieldFrom.text.charCodeAt(0) - 'A'.charCodeAt(0),
+                                       textFieldTo.text.charCodeAt(0) - 'A'.charCodeAt(0))
+
+                            listView.model = graph.getWeights(textFieldFrom.text.charCodeAt(0) - 'A'.charCodeAt(0),
+                                                              textFieldTo.text.charCodeAt(0) - 'A'.charCodeAt(0))
+
+                        }
+                        image.source = ""
                         image.source = "file://" + graph.filePath()
                     }
                 }
 
                 TextField {
-                    id: textField
+                    id: textFieldFrom
                     text: "A"
-                    Layout.fillHeight: false
+                    placeholderText: "from"
                     Layout.fillWidth: true
                     Layout.preferredHeight: 37
                     Layout.preferredWidth: 105
                 }
+                TextField {
+                    id: textFieldTo
+                    placeholderText: "to"
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 37
+                    Layout.preferredWidth: 105
+                }
+
+
             }
         }
 
@@ -89,6 +138,8 @@ Window {
 
             Image {
                 id: image
+                autoTransform: true
+                cache: false
                 sourceSize.width: parent.width
                 anchors.fill: parent
                 sourceSize.height: parent.height
