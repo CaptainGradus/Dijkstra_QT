@@ -81,7 +81,7 @@ Window {
                                 delegate: TextEdit {
                                     text: model.' + r + ';
                                     onEditingFinished: {
-                                        if (isNaN(text))
+                                        if (isNaN(text) || text < 0)
                                             text = "-"
                                         model.' + r + ' = text
                                     }

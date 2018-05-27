@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 
     QFile file;
     file.setFileName("solution.html");
-    file.open(QIODevice::ReadWrite);
+    file.open(QIODevice::ReadWrite | QIODevice::Truncate);
 
     GraphDataVector graphData;
 

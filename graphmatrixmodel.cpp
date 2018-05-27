@@ -45,7 +45,7 @@ QVariant GraphMatrixModel::data(const QModelIndex &index, int role) const
 
 bool GraphMatrixModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (!mMatrix)
+    if (!mMatrix || index.row() == (role - 'A'))
         return false;
 
     GraphData item;

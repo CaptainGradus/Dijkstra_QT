@@ -29,7 +29,7 @@ TableView {
         delegate: TextEdit {
             text: model.A
             onEditingFinished: {
-                if (isNaN(text))
+                if (isNaN(text) || text < 0)
                     text = "-"
                 model.A = text
             }
@@ -43,7 +43,7 @@ TableView {
         delegate: TextEdit {
             text: model.B
             onEditingFinished: {
-                if (isNaN(text))
+                if (isNaN(text) || text < 0)
                     text = "-"
                 model.B = text
             }
@@ -57,7 +57,7 @@ TableView {
         delegate: TextEdit {
             text: model.C
             onEditingFinished: {
-                if (isNaN(text))
+                if (isNaN(text) || text < 0)
                     text = "-"
                 model.C = text
             }
@@ -71,7 +71,7 @@ TableView {
         delegate: TextEdit {
             text: model.D
             onEditingFinished: {
-                if (isNaN(text))
+                if (isNaN(text) || text < 0)
                     text = "-"
                 model.D = text
             }
@@ -85,7 +85,7 @@ TableView {
         delegate: TextEdit {
             text: model.E
             onEditingFinished: {
-                if (isNaN(text))
+                if (isNaN(text) || text < 0)
                     text = "-"
                 model.E = text
             }
@@ -98,8 +98,9 @@ TableView {
 
         delegate: TextEdit {
             text: model.F
+
             onEditingFinished: {
-                if (isNaN(text))
+                if (isNaN(text) || text < 0)
                     text = "-"
                 model.F = text
             }

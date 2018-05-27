@@ -44,12 +44,16 @@ public slots:
 
     QString filePath();
 
-private:
-    struct algResults {
-        algResults(QVector<int>* pathways = nullptr, GraphData* distances = nullptr);
+    void resetSolutions();
 
-        QVector<int>* pathways;
-        GraphData* distances;
+private:
+    const double degToRad = 57.2958;
+    struct algResults {
+        algResults(QVector<QVector<int>> pathways, QVector<GraphData> distances);
+        algResults() {}
+
+        QVector<QVector<int>> pathways;
+        QVector<GraphData> distances;
     };
 
     struct Rib
@@ -72,7 +76,9 @@ private:
     QMap<int, algResults> shortPathways;
 
     algResults dijkstra(const int) const;
-    int findMin(GraphData* const &, bool* const &, const int &) const;
+    int findMin(QVector<GraphData> const &distances, QVector<bool> const &isVisited) const;
+
+    void drawArrow(QPainter& painter, double xStart, double yStart, double xEnd, double yEnd);
 };
 
 #endif // GRAPH_H

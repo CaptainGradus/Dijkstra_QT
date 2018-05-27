@@ -7,40 +7,89 @@ Graph::Graph(QObject *parent) : QObject(parent), mMatrix (nullptr), mFile (nullp
 Graph::algResults Graph::dijkstra(const int start) const {
     int size = mMatrix->getSize();
 
-    QVector<int>* tempPathways = new QVector<int>[size];
-    GraphData* tempDistances = new GraphData[size];
-    bool* isVisited = new bool[size];
+    QVector<QVector<int>> tempPathways(size); // пути
+    QVector<GraphData> tempDistances(size); // длины путей
+    QVector<bool> isVisited(size); // посещена ли вершина
     int counter = size;
+
+    for (int i = 0; i < size; i++)
+        tempPathways[i].append(i);
 
     tempDistances[start] = 0;
 
-    for (int i = 0; i < size; i++) {
-        if (i != start)
-            tempDistances[i].undef();
-        isVisited[i] = false;
-    }
-
     while(counter--) {
-        int curVertex = findMin(tempDistances, isVisited, size);
+        int curVertex = findMin(tempDistances, isVisited);
         isVisited[curVertex] = true;
 
-        for (int i = 0; i < size && !isVisited[i] && mMatrix->getItem(curVertex, i).isDef(); i++)
-            if (tempDistances[i] > tempDistances[curVertex] + mMatrix->getItem(curVertex, i)) {
-                tempDistances[curVertex] = tempDistances[i] + mMatrix->getItem(curVertex, i);
-                tempPathways[i] = tempPathways[curVertex];
-                tempPathways[i].push_back(i);
-            }
+        for (int i = 0; i < size; i++)
+            if (!isVisited[i] && mMatrix->getItem(curVertex, i).isDef())
+                if (tempDistances[i] > tempDistances[curVertex] + mMatrix->getItem(curVertex, i)) {
+                    tempDistances[i] = tempDistances[curVertex] + mMatrix->getItem(curVertex, i);
+                    tempPathways[i] = tempPathways[curVertex];
+                    tempPathways[i].push_back(i);
+                }
     }
 
     return algResults(tempPathways, tempDistances);
 }
 
-int Graph::findMin(GraphData* const &distances, bool* const &isVisited, const int &size) const {
-    int min = 0;
-    for (int i = 1; i < size; i++)
-        if (!isVisited[i] && distances[i] < distances[min])
-            min = i;
-    return min;
+int Graph::findMin(QVector<GraphData> const &distances, QVector<bool> const &isVisited) const {
+    GraphData min;
+    int minIndex = 0;
+    for (int i = 0; i < distances.size(); i++)
+        if (!isVisited[i] && distances[i].isDef() && (distances[i] < min)) {
+            min = distances[i];
+            minIndex = i;
+        }
+    return minIndex;
+}
+
+void Graph::drawArrow(QPainter& painter, double xStart, double yStart, double xEnd, double yEnd)
+{
+    double xSE = xEnd - xStart;
+    double ySE = yEnd - yStart;
+
+    double deviation = 25;
+    if (xStart > xEnd)
+        deviation = -deviation;
+
+    double yDev = deviation / (sqrt (1 + pow(ySE / xSE, 2)));
+    double xDev = sqrt (pow (deviation, 2) - pow (yDev, 2));
+
+    QPainterPath path;
+    path.moveTo(xStart, yStart);
+    path.cubicTo((xStart + xEnd) / 2 + xDev, (yStart + yEnd) / 2 + yDev, xEnd, yEnd, xEnd, yEnd);
+
+    painter.drawPath(path);
+
+    int len = 20;
+    double angle1 = 30 / degToRad;
+    double l = sqrt(pow((xStart - xEnd), 2) + pow((yStart - yEnd), 2));
+
+    //qDebug() << "angle1: " << angle1 * degToRad << " l: " << l;
+
+    // точка A
+    double angle2 = acos((xEnd - xStart) / l);
+    if (yStart > yEnd)
+        angle2 = -angle2;
+    double angle3 = angle1 - angle2;
+    double xA = xEnd - cos(angle3) * len;
+    double yA = yEnd + sin(angle3) * len;
+    //qDebug() << "A: " << " angle2: " << angle2 * degToRad << " angle3: " << angle3 * degToRad << " xA: " << xA << " yA: " << yA;
+
+
+    // точка B
+    angle2 = acos((yEnd - yStart) / l);
+    if (xStart > xEnd)
+        angle2 = -angle2;
+    angle3 = angle1 - angle2;
+    double xB = xEnd + sin(angle3) * len;
+    double yB = yEnd - cos(angle3) * len;
+    //qDebug() << "B: " << " angle2: " << angle2 * degToRad << " angle3: " << angle3 * degToRad << " xB: " << xB << " yB: " << yB;
+
+    painter.drawLine(xEnd, yEnd, xA, yA);
+    painter.drawLine(xA, yA, xB , yB);
+    painter.drawLine(xB , yB, xEnd, yEnd);
 }
 
 QFile *Graph::file() const
@@ -105,13 +154,17 @@ void Graph::setMatrix(GraphDataVector *matrix)
 
 void Graph::draw(int start)
 {
-    if (!mMatrix && !mFile)
+    qDebug() << start;
+
+    if (!mMatrix && !mFile && (start > mMatrix->getSize()))
         return;
+
+    mFile->reset();
 
     QSvgGenerator generator;
     generator.setOutputDevice(mFile);
-    generator.setSize(QSize(400, 400));
-    generator.setViewBox(QRect(0, 0, 400, 400));
+    generator.setSize(QSize(800, 800));
+    generator.setViewBox(QRect(0, 0, 800, 800));
     generator.setTitle(tr("graph short pathways with svg"));
     generator.setDescription(tr("An SVG drawing created by the SVG Generator "));
 
@@ -129,37 +182,60 @@ void Graph::draw(int start)
         for (int i = 0; i < p.size() - 1; i++)
             ribs[ribs.indexOf(Rib(p.at(i), p.at(i + 1)))].isShort = true;
 
-
     QPainter painter;
 
     painter.begin(&generator);
-    painter.setRenderHint(QPainter::Antialiasing);
 
-    int radius = 100;
-    int xC = 200;
-    int yC = 200;
+    int radius = 300;
+    int xC = 400;
+    int yC = 400;
     double angle = 360 / weightMat.size();
 
-    for (Rib r : ribs)
-        if (r.isShort)
-            painter.drawLine(xC + radius * cos(angle * r.start), yC + radius * sin(angle * r.start),
-                             xC + radius * cos(angle * r.end), yC + radius * sin(angle * r.end));
+    double lilCircleRad = 15;
 
-    int circleWidth = 40;
-    int circleHeight = 40;
+    QPen pen;
+    pen.setWidth(3);
+
+    for (Rib r : ribs) {
+        if (r.isShort)
+            pen.setColor(QColor("green"));
+        else
+            pen.setColor(QColor("gray"));
+
+        painter.setPen(pen);
+
+        double xS = xC - radius * cos(angle * r.start / degToRad);
+        double yS = yC - radius * sin(angle * r.start / degToRad);
+
+        double xE = xC - radius * cos(angle * r.end / degToRad);
+        double yE = yC - radius * sin(angle * r.end / degToRad);
+
+        double len = sqrt (pow(xS - xE, 2) + pow(yS - yE, 2));
+        double an = acos((xE - xS) / len);
+        if (yE < yS)
+            an = -an;
+
+        drawArrow(painter, xS, yS, xE - lilCircleRad * cos(an), yE - lilCircleRad * sin(an));
+
+        qDebug() << "xStart: " << xE - lilCircleRad * cos(an) << " yStart: " << yE - lilCircleRad * sin(an);
+        qDebug() << "xEnd: " << xS << " yEnd: " << yE;
+    }
+
+    painter.setPen(QColor("black"));
 
     for (int i = 0; i < weightMat.size(); i++) {
-        QRect rect (xC + radius * cos(angle * i) - circleWidth / 2, yC + radius * sin(angle * i) - circleHeight / 2, circleWidth, circleHeight);
+        int x = xC - radius * cos(angle * i / 57.2958);
+        int y = yC - radius * sin(angle * i / 57.2958);
 
         if (i == start)
-            painter.fillRect(rect, QColor("red"));
+            painter.setBrush(QBrush("red"));
         else
-            painter.fillRect(rect, QColor("yellow"));
+            painter.setBrush(QBrush("yellow"));
+
+        painter.drawEllipse(QPoint(x, y), lilCircleRad, lilCircleRad);
 
         QString s ('A' + i);
-        painter.drawText(rect, Qt::AlignCenter, s);
-
-        painter.drawEllipse(rect);
+        painter.drawText(QPoint(x - 3, y + 3), s);
     }
 
     painter.end();
@@ -176,5 +252,10 @@ QString Graph::filePath()
     return fileInfo.absoluteFilePath().mid(2);
 }
 
-Graph::algResults::algResults(QVector<int> *pathways, GraphData *distances) : pathways(pathways), distances(distances)
+void Graph::resetSolutions()
+{
+    shortPathways.clear();
+}
+
+Graph::algResults::algResults(QVector<QVector<int>> pathways, QVector<GraphData> distances) : pathways(pathways), distances(distances)
 {}

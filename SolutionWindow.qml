@@ -39,7 +39,10 @@ Window {
                 Layout.preferredHeight: 46
                 Layout.preferredWidth: 105
 
-                onClicked: signalExit()
+                onClicked: {
+                    graph.resetSolutions()
+                    signalExit()
+                }
             }
 
             ColumnLayout {
@@ -54,13 +57,15 @@ Window {
                     Layout.preferredWidth: 105
 
                     onClicked: {
-                        graph.draw(textField.text)
+                        graph.draw(textField.text.charCodeAt(0) - 'A'.charCodeAt(0))
+                        image.source = "file://"
                         image.source = "file://" + graph.filePath()
                     }
                 }
 
-                SpinBox {
+                TextField {
                     id: textField
+                    text: "A"
                     Layout.fillHeight: false
                     Layout.fillWidth: true
                     Layout.preferredHeight: 37
