@@ -9,6 +9,7 @@
 #include <QResource>
 #include <QDir>
 #include <QDebug>
+#include <QPainterPath>
 
 #include "graphdata.h"
 #include "graphdatavector.h"
@@ -63,7 +64,7 @@ private:
         Rib() {}
         Rib(int start, int end, bool isShort = false): start(start), end(end), isShort(isShort) {}
 
-        bool operator == (Rib other) {
+        bool operator == (const Rib &other) const {
             return start == other.start && end == other.end;
         }
 

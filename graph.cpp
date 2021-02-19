@@ -65,8 +65,6 @@ void Graph::drawArrow(QPainter& painter, double xStart, double yStart, double xE
 
     path.cubicTo((xStart + xEnd) / 2 + xDev, (yStart + yEnd) / 2 + yDev, xEnd, yEnd, xEnd, yEnd);
 
-    //qDebug() << "xStart: " << xStart << " yStart: " << yStart << " xEnd: " << xEnd << " yEnd: " << yEnd;
-    //qDebug() << " xDev: " << xDev << " yDev: " << yDev;
     painter.drawPath(path);
 
     double textDev = 5;
@@ -79,8 +77,6 @@ void Graph::drawArrow(QPainter& painter, double xStart, double yStart, double xE
     double angle1 = 30 / degToRad;
     double l = sqrt(pow((xStart - xEnd), 2) + pow((yStart - yEnd), 2));
 
-    //qDebug() << "angle1: " << angle1 * degToRad << " l: " << l;
-
     // точка A
     double angle2 = acos((xEnd - xStart) / l);
     if (yStart > yEnd)
@@ -88,8 +84,6 @@ void Graph::drawArrow(QPainter& painter, double xStart, double yStart, double xE
     double angle3 = angle1 - angle2;
     double xA = xEnd - cos(angle3) * len;
     double yA = yEnd + sin(angle3) * len;
-    //qDebug() << "A: " << " angle2: " << angle2 * degToRad << " angle3: " << angle3 * degToRad << " xA: " << xA << " yA: " << yA;
-
 
     // точка B
     angle2 = acos((yEnd - yStart) / l);
@@ -98,7 +92,6 @@ void Graph::drawArrow(QPainter& painter, double xStart, double yStart, double xE
     angle3 = angle1 - angle2;
     double xB = xEnd + sin(angle3) * len;
     double yB = yEnd - cos(angle3) * len;
-    //qDebug() << "B: " << " angle2: " << angle2 * degToRad << " angle3: " << angle3 * degToRad << " xB: " << xB << " yB: " << yB;
 
     painter.drawLine(xEnd, yEnd, xA, yA);
     painter.drawLine(xA, yA, xB , yB);
@@ -248,9 +241,9 @@ void Graph::draw(int start, int end)
         else
             painter.setBrush(QBrush("yellow"));
 
-        painter.drawEllipse(QPoint(x, y), lilCircleRad, lilCircleRad);
+        painter.drawEllipse(QPoint(x, y), (qreal) lilCircleRad, (qreal) lilCircleRad);
 
-        QString s ('A' + i);
+        QString s('A' + i);
         painter.drawText(QPoint(x - 3, y + 3), s);
     }
 
@@ -291,15 +284,22 @@ QStringList Graph::getWeights(int start, int end)
             fromTo += i++ + 'A';
             fromTo += ": ";
 
-            strList.append(fromTo + QString::number(val.getData()));
+            if (val.isDef())
+                strList.append(fromTo + QString::number(val.getData()));
+            else
+                strList.append(fromTo + "?");
         }
     }
     else {
-        fromTo = start + 'A';
+        fromTo = QString(start + 'A');
         fromTo += "-";
-        fromTo += end + 'A';
+        fromTo += QString(end + 'A');
         fromTo += ": ";
-        strList.append(fromTo + QString::number(getDistance(start, end).getData()));
+
+        if (getDistance(start, end).isDef())
+            strList.append(fromTo + QString::number(getDistance(start, end).getData()));
+        else
+            strList.append(fromTo + "?");
     }
 
     return strList;

@@ -26,7 +26,7 @@ double GraphData::getData() {
 }
 
 void GraphData::setData(double data) {
-    data = data;
+    this->data = data;
     isDefined = true;
 }
 

@@ -4,6 +4,7 @@ import QtQuick.Window 2.10
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.3
+//import QtQuick 2.15
 
 import Graph 1.0
 
@@ -90,6 +91,7 @@ Window {
 
 
                         graphMatrix.addColumn(col)
+
                         graphMatrix.model = Qt.createQmlObject('
                             import Graph 1.0;
 

@@ -31,10 +31,8 @@ QVariant GraphMatrixModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (role == myEnum.at(0)) {
-        QString s ('A' + index.row());
-        return s;
-    }
+    if (role == myEnum.at(0))
+        return QString ('A' + index.row());
 
     if (myEnum.contains(role))
         if (mMatrix->getItem(index.row(), myEnum.indexOf(role) - 1).isDef())
@@ -124,16 +122,14 @@ void GraphMatrixModel::setMatrix(GraphDataVector *matrix)
             endInsertColumns();
             endInsertRows();});
 
-        connect (mMatrix, &GraphDataVector::preItemRemoved, this, [=](int index) {
+        connect (mMatrix, &GraphDataVector::preItemRemoved, this, [=]() {
             beginResetModel();
-            //beginRemoveRows(QModelIndex(), index, index);
-
             myEnum.pop_back();
         });
 
         connect (mMatrix, &GraphDataVector::postItemRemoved, this, [=]() {
             endResetModel();
-            /*endRemoveRows();*/});
+        });
     }
 
     endResetModel();
